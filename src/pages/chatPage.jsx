@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Chat } from "../components/Chat.jsx";
 import { ButtonAddChat } from "../components/ButtonAddChat.jsx";
 import { ChatList } from "../components/ChatList.jsx";
@@ -11,8 +11,19 @@ import { ReplyContext } from "../contexts/index.js";
 function ChatPage() {
   const { currentChat } = useSelector((state) => state.chat);
   const [reply, setReply] = useState(null);
+  const [isMobile, setIsMobile] = useState(document.documentElement.scrollWidth <= 768);
+
+  useEffect(() => {
+    window.onresize = () => {
+      setIsMobile(document.documentElement.scrollWidth <= 768);
+    };
+    
+    return () => {
+      window.onresize = null
+    };
+}, []);
+
   const user = useSelector((state) => state.user);
-  const isMobile = document.documentElement.scrollWidth <= 768;
   const outterClassnames = cn(
     "container chat-page__inner my-4 overflow-hidden",
     {
