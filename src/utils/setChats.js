@@ -3,7 +3,7 @@ import { chatCollection } from "../services/chat";
 
 export const setChats = async (data, chats) => {
   const searchQuery =
-    data.access === "smm-manager"
+    data.access === "chat-operator" || data.access === "ceo"
       ? query(chatCollection)
       : query(
           chatCollection,

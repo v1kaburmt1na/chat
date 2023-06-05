@@ -21,7 +21,7 @@ function Layout() {
           <Link className="navbar-brand" to="/">
             Каналы
           </Link>
-          {user.access === "smm-manager" && (
+          {(user.access === "chat-operator" || user.access === 'ceo') && (
             <div
               onClick={deptsHandleClick}
               className="navbar-brand dept-modal"
@@ -30,7 +30,7 @@ function Layout() {
               Отделы
             </div>
           )}
-          {user.access === "hr-manager" && (
+          {(user.access === "hr-manager" || user.access === 'ceo') && (
             <Link className="navbar-brand" to="users">
               Сотрудники
             </Link>

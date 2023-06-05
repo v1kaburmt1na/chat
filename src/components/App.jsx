@@ -8,13 +8,12 @@ import ChatPage from "../pages/chatPage.jsx";
 import NotFoundPage from "../pages/notFoundPage.jsx";
 import { fetchChats } from "../services/chat.js";
 import { fetchDepartments } from "../services/department.js";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { UsersPage } from "../pages/usersPage.jsx";
 import { fetchUsers } from "../services/users.js";
 import { login } from "../services/user.js";
 
 function AuthProvider({ children }) {
-  const dispatch = useDispatch(); // Хук для выполнения действия в redux
   const username = localStorage.getItem("username");
   const password = localStorage.getItem("password"); // Возьмем из локального хранилища инфу о токене
   const currentUserState = Boolean(username); // есть ли имя пользователя

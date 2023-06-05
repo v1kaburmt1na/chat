@@ -666,3 +666,19 @@ table th {
 .channels {
   padding: 0 12px;
 }
+
+.Toastify__toast {
+  align-items: center;
+  gap: 10px;
+
+  .Toastify__toast-body {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .Toastify__close-button {
+    align-self: center;
+  }
+}
+

@@ -22,7 +22,7 @@ export const usersCollection = collection(db, "users");
 
 export const fetchUsers = async (access) => {
   // запрос всех пользователей
-  if (access !== "hr-manager") {
+  if (access !== "hr-manager" && access !== 'ceo') {
     // если уровень доступа не админ, то не запрашиваем всех пользователей
     return;
   }

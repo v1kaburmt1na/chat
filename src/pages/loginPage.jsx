@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/index.js";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import loginPhoto from "/loginPhoto.jpg";
 import { login } from "../services/user.js";
 

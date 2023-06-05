@@ -18,7 +18,6 @@ import {
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import i18next from "i18next";
-import sound from "../../assets/sound.wav"; // звук уведомления при получения сообщения
 import { usersCollection } from "./users.js";
 import { v4 } from "uuid";
 
@@ -28,8 +27,8 @@ export const fetchChats = async (ctx) => {
   // запрос всех чатов для юзера
   const { access, department } = ctx;
   let queryChats;
-  if (access === "smm-manager") {
-    // если уровень доступа не сотрудник - запрашиваются все чаты
+  if (access === "chat-operator" || access === "ceo") {
+    // если уровень доступа не ген. директор и не оператор чата
     queryChats = query(chatCollection, orderBy("updatedAt", "desc"));
   } else {
     // иначе запрашиваются только те чаты, к которым имеет доступ юзер исходя из его отдела
@@ -43,27 +42,7 @@ export const fetchChats = async (ctx) => {
   onSnapshot(queryChats, async (querySnapshot) => {
     querySnapshot.docChanges().forEach(async (change) => {
       if (change.type === "modified") {
-        const { chats, currentChat } = store.getState().chat; // берем информацию о чатах из хранилища
-        const currentChatObj = chats.find((chat) => chat.id === change.doc.id); // находим чат, в котором произошло изменение (по id), среди своих чатов
-        const modifiedChat = change.doc.data(); // получаем дату измененного чата
-        if (
-          modifiedChat.messages.length > currentChatObj.messages.length && // проверка на то, что инициатор изменения = новое сообщение
-          currentChat !== change.doc.id // уведомлять пользователя если сообщение пришло в другом канале
-        ) {
-          const audio = new Audio(sound); // взаимодействие со звуком
-          audio.volume = 0.3; // уменьшаем громкость до 30%
-          audio.play(); // включаем звук
-          const { name, messages } = modifiedChat; // берем сообщения и название из чата
-          const { content, author } = messages.at(-1); // берем последнее сообщение
-          const authorDoc = doc(db, "users", author.id); // получаем документ автора сообщения
-          const authorRef = await getDoc(authorDoc); // получаем документ автора сообщения
-          const { name: firstName, secondName, thirdName } = authorRef.data(); // получаем ФИО отправителя
-          const fullName = `${secondName} ${firstName.at(0)}. ${thirdName.at(
-            0
-          )}.`; // генерируем ФИО отправителя
-          const newMessageNotification = `${name} ${fullName}: ${content}`; // генерируем уведомление
-          toast.info(newMessageNotification);
-        }
+        console.log(change.doc.data());
       }
     });
   });
@@ -227,7 +206,7 @@ export const addMessage = async (data, id, reply) => {
   await updateDoc(chatRef, {
     // обновляем документ добавляя в массив сообщений новое с помощью arrayUnion
     messages: arrayUnion(newMessage),
-    updatedAt: currentDate
+    updatedAt: currentDate,
   });
 };
 

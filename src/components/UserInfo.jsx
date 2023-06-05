@@ -23,7 +23,7 @@ export const UserInfo = (props) => {
 
   if (user === null) {
     currentUser = nullUser;
-  } 
+  }
 
   const schema = yup.object().shape({
     // объект валидации
@@ -66,7 +66,7 @@ export const UserInfo = (props) => {
   const departments = useSelector((state) => state.department.depts);
   const formik = useFormik({
     validationSchema: schema,
-    initialValues: setValues(currentUser)
+    initialValues: setValues(currentUser),
   });
   const { values, errors, handleChange, setFieldValue, setFieldError } = formik;
   useEffect(() => {
@@ -230,10 +230,10 @@ export const UserInfo = (props) => {
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
-                      setFieldValue("access", "smm-manager");
+                      setFieldValue("access", "chat-operator");
                     }}
                   >
-                    {t(`access.smm-manager`)}
+                    {t(`access.chat-operator`)}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
@@ -241,6 +241,13 @@ export const UserInfo = (props) => {
                     }}
                   >
                     {t(`access.hr-manager`)}
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => {
+                      setFieldValue("access", "ceo");
+                    }}
+                  >
+                    {t(`access.ceo`)}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -307,7 +314,9 @@ export const UserInfo = (props) => {
           </div>
         </form>
       ) : (
-        <div className="choose-user rounded">Добавьте сотрудника или выберите из списка</div>
+        <div className="choose-user rounded">
+          Добавьте сотрудника или выберите из списка
+        </div>
       )}
     </div>
   );
