@@ -5,8 +5,8 @@ export const ButtonAddChat = () => {
   // кнопка создания чата
   const { showModal } = useModal(); // функция для открытия модалки
   const user = useSelector((state) => state.user); // берем инфу о юзере
-  if (user.access !== "chat-operator" && user.access !== "ceo") {
-    // если уровень доступа не равен чат оператору ИЛИ ген. директору, то мы не рисуем эту кнопку
+  if (user.access !== "chat-operator") {
+    // если уровень доступа не равен чат оператору, то мы не рисуем эту кнопку
     return null;
   }
   return (

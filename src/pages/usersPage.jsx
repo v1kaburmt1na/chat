@@ -10,7 +10,7 @@ export const UsersPage = () => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState();
   useEffect(() => {
-    if (user.access !== "hr-manager" && user.access !== 'ceo') {
+    if (user.access !== "hr-manager") {
       navigate("/");
     }
   }, [user.access]);

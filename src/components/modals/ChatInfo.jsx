@@ -63,23 +63,22 @@ export const ChatInfo = (props) => {
               );
             })}
           </div>
-          {user.access === "chat-operator" ||
-            (user.access === "ceo" && (
-              <div className="chat-info-manage">
-                <div
-                  className="chat-info-remove chat-info-btn"
-                  onClick={removeChatHandle}
-                >
-                  Удалить
-                </div>
-                <div
-                  className="chat-info-edit chat-info-btn"
-                  onClick={editChatHandle}
-                >
-                  Изменить
-                </div>
+          {user.access === "chat-operator" && (
+            <div className="chat-info-manage">
+              <div
+                className="chat-info-remove chat-info-btn"
+                onClick={removeChatHandle}
+              >
+                Удалить
               </div>
-            ))}
+              <div
+                className="chat-info-edit chat-info-btn"
+                onClick={editChatHandle}
+              >
+                Изменить
+              </div>
+            </div>
+          )}
         </div>
       </Modal.Body>
     </Modal>
