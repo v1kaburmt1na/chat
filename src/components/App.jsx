@@ -103,11 +103,11 @@ function App() {
             }
           />
           {/* Кладем внутрь компонент PrivateRoute и он следит за авторизацией */}
-          <Route path="login" element={<LoginPage />} />
           {/* Страница регистрации */}
-          <Route path="*" element={<NotFoundPage />} />
           {/* Все остальные страницы */}
         </Route>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </ModalProvider>
   );
