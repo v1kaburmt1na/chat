@@ -16,6 +16,9 @@ const userSlice = createSlice({
       for (const key of Object.keys(state)) {
         state[key] = nullUser[key];
       }
+
+      localStorage.removeItem('username');
+      localStorage.removeItem('password');
     },
     setUser: (state, { payload }) => {
       setUser(state, payload);

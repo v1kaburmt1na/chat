@@ -8,6 +8,7 @@ export const nullUserFormik = {
   secondName: "",
   thirdName: "",
   username: "",
+  isAuthorized: false
 };
 
 export const nullUser = {

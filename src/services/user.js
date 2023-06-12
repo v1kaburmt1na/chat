@@ -14,44 +14,58 @@ import {
 import { error } from "../utils/error.js";
 import { toast } from "react-toastify";
 import i18next from "i18next";
+import { actions as mainActions } from "../slices/mainSlice.js";
 
 const usersCollection = collection(db, "users");
 
 export const login = async (data) => {
+  if (!data.username || !data.password) {
+    store.dispatch(mainActions.setLoading(false));
+    return;
+  }
+
   // авторизация (вход в учетку)
   const userQuery = query(
     usersCollection,
     where("username", "==", data.username),
     where("password", "==", data.password)
-  ); // ищем пользователя с переданным логином и паролем
-  const userSnapshot = await getDocs(userQuery); // ищем пользователя с переданным логином и паролем
-  if (userSnapshot.size !== 1) {
-    toast.error(i18next.t("errors.auth"));
-    throw error("404"); // говоим пользователю о том, что он ввел неверные данные
-  }
-  const { isActive } = userSnapshot.docs[0].data();
-  if (!isActive) {
-    // проверяем активирован ли польхователь
-    toast.error(i18next.t("errors.needActivate"));
-    throw error("403");
-  }
-
-  onSnapshot(userQuery, (userSnap) => {
-    const userData = userSnap.docs[0].data();
-    const userId = userSnap.docs[0].id;
-
-    const newUserObj = {
-      // создаем удобный объект пользователя и в дальнейшем его передадим в хранилище
-      ...userData,
-      id: userId,
-    };
-
-    const localStorageUsername = localStorage.getItem('username');
-    if (localStorageUsername === null || userData.username === localStorageUsername) {
+    ); // ищем пользователя с переданным логином и паролем
+    const userSnapshot = await getDocs(userQuery); // ищем пользователя с переданным логином и паролем
+    if (userSnapshot.size !== 1) {
+      toast.error(i18next.t("errors.auth"));
+      store.dispatch(mainActions.setLoading(false));
+      localStorage.removeItem('username');
+      localStorage.removeItem('password');
+      throw error("404"); // говорим пользователю о том, что он ввел неверные данные
+    }
+    const { isActive } = userSnapshot.docs[0].data();
+    if (!isActive) {
+      // проверяем активирован ли польхователь
+      toast.error(i18next.t("errors.needActivate"));
+      store.dispatch(mainActions.setLoading(false));
+      throw error("403");
+    }
+    
+    onSnapshot(userQuery, (userSnap) => {
+      const userData = userSnap.docs[0].data();
+      const userId = userSnap.docs[0].id;
+      
+      const newUserObj = {
+        // создаем удобный объект пользователя и в дальнейшем его передадим в хранилище
+        ...userData,
+        id: userId,
+        isAuthorized: true
+      };
+      
+      const localStorageUsername = localStorage.getItem('username');
+      if (localStorageUsername === null || userData.username === localStorageUsername) {
+      console.log('here');
+      
       localStorage.setItem("username", userData.username);
       localStorage.setItem("password", userData.password);
   
       store.dispatch(actions.setUser(newUserObj));
+      store.dispatch(mainActions.setLoading(false));
     }
   });
 };

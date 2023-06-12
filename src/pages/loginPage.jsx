@@ -3,7 +3,6 @@ import { Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../hooks/index.js";
 import { useSelector } from "react-redux";
 import loginPhoto from "/loginPhoto.jpg";
 import { login } from "../services/user.js";
@@ -12,16 +11,15 @@ function LoginPage() {
   const { t } = useTranslation(); // берем функцию для перевода
   const inputEl = useRef(); // создаем ref для автофокуса на поле
   const navigate = useNavigate(); // берем функцию роутинга
-  const auth = useAuth(); // берем инфу о нашей сессии
-  const { logIn } = auth; // берем функцию из контекста для авторизации
   const user = useSelector((state) => state.user);
   useEffect(() => {
     inputEl.current.focus(); // автофокус при инициализации компонента
   }, []);
 
+  console.log(user.isAuthorized);
+
   useEffect(() => {
-    if (user.username && localStorage.getItem("username")) {
-      logIn();
+    if (user.isAuthorized) {
       navigate("/");
     }
   }, [user]);
@@ -46,6 +44,7 @@ function LoginPage() {
                     username,
                     password,
                   };
+                  console.log(user);
                   login(user);
                 }}
                 initialValues={{
