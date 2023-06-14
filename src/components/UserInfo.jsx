@@ -94,6 +94,14 @@ export const UserInfo = (props) => {
     "users-blank": user === undefined,
   });
 
+  const isCeo = values.post === "Генеральный директор";
+
+  useEffect(() => {
+    if (isCeo && values.access !== 'ceo') {
+      formik.setFieldValue('access', 'ceo');
+    }
+  }, [isCeo]);
+
   return (
     <div className={className}>
       {user !== undefined ? (
@@ -213,48 +221,50 @@ export const UserInfo = (props) => {
                 {errors.department}
               </div>
             </FormGroup>
-            <FormGroup>
-              <FormLabel>{t("data.access")}</FormLabel>
-              <Dropdown>
-                <Dropdown.Toggle variant="secondary">
-                  {t(`access.${values.access}`)}
-                </Dropdown.Toggle>
+            {!isCeo && (
+              <FormGroup>
+                <FormLabel>{t("data.access")}</FormLabel>
+                <Dropdown>
+                  <Dropdown.Toggle variant="secondary">
+                    {t(`access.${values.access}`)}
+                  </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => {
-                      setFieldValue("access", "employee");
-                    }}
-                  >
-                    {t(`access.employee`)}
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => {
-                      setFieldValue("access", "chat-operator");
-                    }}
-                  >
-                    {t(`access.chat-operator`)}
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => {
-                      setFieldValue("access", "hr-manager");
-                    }}
-                  >
-                    {t(`access.hr-manager`)}
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => {
-                      setFieldValue("access", "ceo");
-                    }}
-                  >
-                    {t(`access.ceo`)}
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.access}
-              </div>
-            </FormGroup>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={() => {
+                        setFieldValue("access", "employee");
+                      }}
+                    >
+                      {t(`access.employee`)}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => {
+                        setFieldValue("access", "chat-operator");
+                      }}
+                    >
+                      {t(`access.chat-operator`)}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => {
+                        setFieldValue("access", "hr-manager");
+                      }}
+                    >
+                      {t(`access.hr-manager`)}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => {
+                        setFieldValue("access", "ceo");
+                      }}
+                    >
+                      {t(`access.ceo`)}
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+                <div className="invalid-feedback" style={{ display: "block" }}>
+                  {errors.access}
+                </div>
+              </FormGroup>
+            )}
             <FormGroup>
               <FormLabel>{t("data.activate")}</FormLabel>
               <Dropdown>
