@@ -39,14 +39,6 @@ export const fetchChats = async (ctx) => {
     );
   }
 
-  onSnapshot(queryChats, async (querySnapshot) => {
-    querySnapshot.docChanges().forEach(async (change) => {
-      if (change.type === "modified") {
-        console.log(change.doc.data());
-      }
-    });
-  });
-
   onSnapshot(queryChats, async (data) => {
     // обновляем наше redux хранилище с чатами
     const chatsArr = data.docs.map(async (docItem) => {
