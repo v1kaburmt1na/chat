@@ -1,4 +1,4 @@
-const months = [
+const months = [ // список месяцев
   "января",
   "февраля",
   "марта",
@@ -14,25 +14,25 @@ const months = [
 ];
 
 export const groupDate = (arr) => {
-  const result = [];
-  const cache = new Map();
-  const currentYear = new Date(Date.now()).getFullYear();
+  const result = []; // массив с результатом
+  const cache = new Map(); // кэш
+  const currentYear = new Date(Date.now()).getFullYear(); // получаем полностью текущий год
 
   for (let i = 0; i < arr.length; i++) {
-    const item = arr[i];
-    const date = new Date(item.date);
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    const isCurrentYear = year === currentYear;
-    const formattedDate = isCurrentYear ? `${day} ${month}` : `${day} ${month} ${year}`;
-    const newMsg = {
-      item,
-      date,
-      number: i + 1
+    const item = arr[i]; // получил сообщение
+    const date = new Date(item.date); // нормализуем дату
+    const day = date.getDate(); // берем день месяца
+    const month = months[date.getMonth()]; // берем месяц
+    const year = date.getFullYear(); // берем год
+    const isCurrentYear = year === currentYear; // было ли это сообщение было отправлено в этом году
+    const formattedDate = isCurrentYear ? `${day} ${month}` : `${day} ${month} ${year}`; // 15.06 либо 15.06.2022
+    const newMsg = { // создаем новый объект сообщения
+      item, // само сообщение
+      date, // дата
+      number: i + 1 // его номер
     };
 
-    const groupDate = cache.get(formattedDate);
+    const groupDate = cache.get(formattedDate); // 
 
     if (groupDate) {
       groupDate.messages.push(newMsg);
@@ -42,7 +42,7 @@ export const groupDate = (arr) => {
         formattedDate
       };
       result.push(groupObj);
-      cache.set(formattedDate, groupObj)
+      cache.set(formattedDate, groupObj) // если даты в кэше нет, то добавляем новое поле в кэш
     }
   }
 

@@ -16,8 +16,8 @@ export const useIntersectionObserver = (
     if (!hasIOSupport || frozen || !node) return;
     const observerParams = { threshold, root, rootMargin };
     const observer = new IntersectionObserver(updateEntry, observerParams);
-    observer.observe(node);
-    return () => observer.disconnect();
+    observer.observe(node); // подписка на слежку за элементом
+    return () => observer.disconnect(); // отписка при удалении компонента из DOM
   }, [
     elementRef?.current,
     JSON.stringify(threshold),

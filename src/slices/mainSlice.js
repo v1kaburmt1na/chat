@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// управление состоянием загрузки данных пользователя 
 const mainSlice = createSlice({
   name: "main",
   initialState: {

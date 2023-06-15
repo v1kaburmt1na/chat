@@ -8,7 +8,7 @@ export const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    setUsers: (state, { payload }) => {
+    setUsers: (state, { payload }) => { // устанавливаются все пользователи
       state.users = [...payload];
     }
   },

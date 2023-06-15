@@ -6,7 +6,7 @@ export const departmentsSlice = createSlice({
     depts: []
   },
   reducers: {
-    setDepartments: (state, { payload }) => {
+    setDepartments: (state, { payload }) => { // устанавливаем все отделы
       state.depts = [...payload];
     },
   }

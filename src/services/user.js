@@ -11,7 +11,6 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
-import { error } from "../utils/error.js";
 import { toast } from "react-toastify";
 import i18next from "i18next";
 import { actions as mainActions } from "../slices/mainSlice.js";
@@ -36,14 +35,14 @@ export const login = async (data) => {
       store.dispatch(mainActions.setLoading(false));
       localStorage.removeItem('username');
       localStorage.removeItem('password');
-      throw error("404"); // говорим пользователю о том, что он ввел неверные данные
+      return;
     }
     const { isActive } = userSnapshot.docs[0].data();
     if (!isActive) {
       // проверяем активирован ли польхователь
       toast.error(i18next.t("errors.needActivate"));
       store.dispatch(mainActions.setLoading(false));
-      throw error("403");
+      return;
     }
     
     onSnapshot(userQuery, (userSnap) => {
@@ -59,7 +58,6 @@ export const login = async (data) => {
       
       const localStorageUsername = localStorage.getItem('username');
       if (localStorageUsername === null || userData.username === localStorageUsername) {
-      console.log('here');
       
       localStorage.setItem("username", userData.username);
       localStorage.setItem("password", userData.password);
