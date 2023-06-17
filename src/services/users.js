@@ -42,6 +42,7 @@ export const fetchUsers = async (access) => {
 };
 
 export const updateUser = async (data, id, chats) => {
+  delete data.isAuthorized;
   // обновить пользователя
   try {
     const userRef = doc(db, "users", id); // получаем ссылку на объект необходимого нам пользователя
@@ -109,6 +110,7 @@ export const getUsersFromDepts = async (departments) => {
 };
 
 export const register = async (data) => {
+  delete data.isAuthorized;
   const isUserUniqueQuery = query(
     usersCollection,
     where("username", "==", data.username)
