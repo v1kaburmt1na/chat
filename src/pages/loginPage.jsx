@@ -16,8 +16,6 @@ function LoginPage() {
     inputEl.current.focus(); // автофокус при инициализации компонента
   }, []);
 
-  console.log(user.isAuthorized);
-
   useEffect(() => {
     if (user.isAuthorized) {
       navigate("/");
@@ -44,8 +42,8 @@ function LoginPage() {
                     username,
                     password,
                   };
-                  console.log(user);
-                  login(user);
+
+                  login(user, 'login');
                 }}
                 initialValues={{
                   // стартовые значения

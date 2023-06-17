@@ -93,6 +93,10 @@ li {
   white-space: pre-wrap;
   word-break: break-word;
   position: relative;
+
+  & * {
+    width: 100% !important;
+  }
 }
 
 .chat-input {
@@ -698,4 +702,8 @@ table th {
 
 .full-height {
   height: 100vh;
+}
+
+img, video {
+  display: block;
 }

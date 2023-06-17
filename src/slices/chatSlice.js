@@ -1,5 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { notifyUser } from "../api/notifyUser";
+import { notifyUser } from "../audio/notifyUser";
 
 const initialState = { // начальное значение сущности чата
   currentChat: null,

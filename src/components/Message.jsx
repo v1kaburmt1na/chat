@@ -26,7 +26,6 @@ export const Message = memo(forwardRef((props, ref) => {
   const hour = formatDate(dateObj.getHours());
   const minutes = formatDate(dateObj.getMinutes());
   const formattedDate = `${hour}:${minutes}`;
-  const messageLines = JSON.parse(content).split("\n");
   const isMyMessage = author.id === userId;
   const msgClassnames = cn("message", {
     "message-my": isMyMessage,
@@ -76,20 +75,7 @@ export const Message = memo(forwardRef((props, ref) => {
             </span>
           ) : null}
           {reply && <MessageReply setReply={setReply} reply={reply} isMyMessage={isMyMessage} />}
-          <div className="content">
-            {messageLines.map((message, i) => (
-              <Fragment key={message + i}>
-                {message ? (
-                  message
-                ) : (
-                  <>
-                    <br />
-                    <br />
-                  </>
-                )}
-              </Fragment>
-            ))}
-          </div>
+          <div className="content" dangerouslySetInnerHTML={{ __html: JSON.parse(content) }} />
           {isContextMenuOpen && (
             <ContextDropdown
               isLast={isLast}

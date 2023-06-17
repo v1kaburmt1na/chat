@@ -17,6 +17,7 @@ import { actions } from "../slices/usersSlice.js";
 import { toast } from "react-toastify";
 import i18next from "i18next";
 import { setChats } from "../utils/setChats.js";
+import { v4 as uuidv4 } from 'uuid';
 
 export const usersCollection = collection(db, "users");
 
@@ -119,14 +120,16 @@ export const register = async (data) => {
     toast.error(i18next.t("errors.exist"));
     return;
   }
+  const token = uuidv4();
 
   const chats = await setChats(data);
   const dataWithChats = {
     ...data,
-    chats
+    chats,
+    token
   };
 
-  await addDoc(usersCollection, dataWithChats); // добавляем документ с инфой о нашем пользователе
+  await setDoc(doc(db, 'users', token), dataWithChats); // добавляем документ с инфой о нашем пользователе
   // const userSnapshot = await getDoc(userRef); // получаем этот документ для уведолмения юзера и сохранения инфы в хранилище
   toast.success(i18next.t("success.register"));
 };

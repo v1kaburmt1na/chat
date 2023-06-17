@@ -37,6 +37,10 @@ export const ChatButton = (props) => {
     dispatch(actions.changeChat(id)); // изменяем текущий канал
   };
 
+  const msg = JSON.parse(lastMessage.content);
+  const removeAllTagsRegexp = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
+  const formattedMsg = msg.replace(removeAllTagsRegexp, '');
+
   return (
     <li ref={menuRef} className={classes} onClick={handleChangeChat}>
       <div className="chat-item-wrapper">
@@ -52,7 +56,7 @@ export const ChatButton = (props) => {
               {lastMessage.author.thirdName[0]}.:
             </span>
             <div className="chat-item-msg">
-              {JSON.parse(lastMessage.content).split("\n")}
+              {formattedMsg}
             </div>
           </>
         ) : (

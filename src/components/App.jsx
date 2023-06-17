@@ -62,15 +62,11 @@ function App() {
   }, [access, department]);
 
   useLayoutEffect(() => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-
-    const user = {
-      username,
-      password,
+    const data = {
+      token: localStorage.getItem('token')
     };
 
-    login(user);
+    login(data, 'auth');
   }, []);
 
   return isLoading ? (

@@ -17,51 +17,62 @@ import { actions as mainActions } from "../slices/mainSlice.js";
 
 const usersCollection = collection(db, "users");
 
-export const login = async (data) => {
-  if (!data.username || !data.password) {
-    store.dispatch(mainActions.setLoading(false));
-    return;
-  }
+export const login = async (data, type) => {
+  let userQuery;
 
-  // авторизация (вход в учетку)
-  const userQuery = query(
-    usersCollection,
-    where("username", "==", data.username),
-    where("password", "==", data.password)
-    ); // ищем пользователя с переданным логином и паролем
-    const userSnapshot = await getDocs(userQuery); // ищем пользователя с переданным логином и паролем
-    if (userSnapshot.size !== 1) {
-      toast.error(i18next.t("errors.auth"));
-      store.dispatch(mainActions.setLoading(false));
-      localStorage.removeItem('username');
-      localStorage.removeItem('password');
-      return;
-    }
-    const { isActive } = userSnapshot.docs[0].data();
-    if (!isActive) {
-      // проверяем активирован ли польхователь
-      toast.error(i18next.t("errors.needActivate"));
+  if (type === 'auth') {
+    if (!data.token) {
       store.dispatch(mainActions.setLoading(false));
       return;
     }
     
-    onSnapshot(userQuery, (userSnap) => {
-      const userData = userSnap.docs[0].data();
-      const userId = userSnap.docs[0].id;
+    userQuery = query(usersCollection, where('token', '==', data.token));
+  } else {
+    if (!data.username || !data.password) {
+      store.dispatch(mainActions.setLoading(false));
+      return;
+    }
+
+    userQuery = query(
+      usersCollection,
+      where("username", "==", data.username),
+      where("password", "==", data.password)
+    );
+  }
+
+  const userSnapshot = await getDocs(userQuery); // ищем пользователя с переданным логином и паролем
+  if (userSnapshot.size !== 1) {
+    toast.error(i18next.t("errors.auth"));
+    store.dispatch(mainActions.setLoading(false));
+    localStorage.removeItem('token');
+    throw error("404");
+  }
+  const { isActive } = userSnapshot.docs[0].data();
+  if (!isActive) {
+    // проверяем активирован ли пользователь
+    toast.error(i18next.t("errors.needActivate"));
+    store.dispatch(mainActions.setLoading(false));
+    throw error("403");
+  }
+
+  onSnapshot(userQuery, (userSnap) => {
+    const userData = userSnap.docs[0].data();
+    const userId = userSnap.docs[0].id;
+
+    const newUserObj = {
+      // создаем удобный объект пользователя и в дальнейшем его передадим в хранилище
+      ...userData,
+      id: userId,
+      isAuthorized: true,
+    };
+
+    const localStorageToken = localStorage.getItem("token");
+    if (
+      localStorageToken === null ||
+      userId === localStorageToken
+    ) {
+      localStorage.setItem('token', userId);
       
-      const newUserObj = {
-        // создаем удобный объект пользователя и в дальнейшем его передадим в хранилище
-        ...userData,
-        id: userId,
-        isAuthorized: true
-      };
-      
-      const localStorageUsername = localStorage.getItem('username');
-      if (localStorageUsername === null || userData.username === localStorageUsername) {
-      
-      localStorage.setItem("username", userData.username);
-      localStorage.setItem("password", userData.password);
-  
       store.dispatch(actions.setUser(newUserObj));
       store.dispatch(mainActions.setLoading(false));
     }

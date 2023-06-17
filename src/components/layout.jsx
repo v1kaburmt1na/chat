@@ -25,7 +25,7 @@ function Layout() {
           <Link className="navbar-brand" to="/">
             Каналы
           </Link>
-          {access === "chat-operator" && (
+          {access === "hr-manager" && (
             <div
               onClick={deptsHandleClick}
               className="navbar-brand dept-modal"

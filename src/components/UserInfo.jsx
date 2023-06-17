@@ -94,13 +94,13 @@ export const UserInfo = (props) => {
     "users-blank": user === undefined,
   });
 
-  const isCeo = values.post === "Генеральный директор";
+  const isCeoPost = values.post === "Исполнительный директор";
 
   useEffect(() => {
-    if (isCeo && values.access !== 'ceo') {
-      formik.setFieldValue('access', 'ceo');
+    if (isCeoPost && values.access !== "ceo") {
+      formik.setFieldValue("access", "ceo");
     }
-  }, [isCeo]);
+  }, [isCeoPost]);
 
   return (
     <div className={className}>
@@ -221,7 +221,7 @@ export const UserInfo = (props) => {
                 {errors.department}
               </div>
             </FormGroup>
-            {!isCeo && (
+            {!isCeoPost && (
               <FormGroup>
                 <FormLabel>{t("data.access")}</FormLabel>
                 <Dropdown>
