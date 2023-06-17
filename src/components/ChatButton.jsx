@@ -37,9 +37,15 @@ export const ChatButton = (props) => {
     dispatch(actions.changeChat(id)); // изменяем текущий канал
   };
 
-  const msg = JSON.parse(lastMessage.content);
-  const removeAllTagsRegexp = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
-  const formattedMsg = msg.replace(removeAllTagsRegexp, '');
+  let msg;
+  if (currentChatObj.messages.length > 0) {
+    const parsedMsg = JSON.parse(lastMessage.content);
+    const removeAllTagsRegexp = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
+    msg = parsedMsg.replace(removeAllTagsRegexp, '');
+  } else {
+    msg = 'Сообщений пока нет 😟';
+  }
+
 
   return (
     <li ref={menuRef} className={classes} onClick={handleChangeChat}>
@@ -56,12 +62,12 @@ export const ChatButton = (props) => {
               {lastMessage.author.thirdName[0]}.:
             </span>
             <div className="chat-item-msg">
-              {formattedMsg}
+              {msg}
             </div>
           </>
         ) : (
           <div className="chat-item-msg">
-            Сообщений пока нет 😟
+            {msg}
           </div>
         )}
       </div>

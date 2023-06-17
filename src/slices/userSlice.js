@@ -17,8 +17,7 @@ const userSlice = createSlice({
         state[key] = nullUser[key]; // ставим дефолтные значения
       }
 
-      localStorage.removeItem('username'); // удаляем из localstorage логин
-      localStorage.removeItem('password'); // удаляем из localstorage пароль
+      localStorage.removeItem('token'); // удаляем из localstorage token
     },
     setUser: (state, { payload }) => {
       setUser(state, payload);
