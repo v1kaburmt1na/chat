@@ -22,10 +22,14 @@ export const MessageField = (props) => {
     }
 
     const scriptTagRegexp = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const styleTagRegexp = /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi;
 
     if (scriptTagRegexp.test(body)) {
       body = body.replace(scriptTagRegexp, "");
+      body = body.replace(styleTagRegexp, "");
     }
+
+    body = body.trim();
 
     const filteredMessage = filter.clean(body);
     const saveFormattingMsg = JSON.stringify(filteredMessage);
