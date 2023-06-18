@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
-const firebaseConfig = {
+const firebaseConfig = { // конфиг для firebase
   apiKey: import.meta.env.VITE_apiKey,
   authDomain: import.meta.env.VITE_authDomain,
   projectId: import.meta.env.VITE_projectId,
@@ -11,5 +11,5 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_measurementId
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const app = initializeApp(firebaseConfig); // инициализация приложения firebase
+export const db = getFirestore(app); // получаем бд из приложения firebase

@@ -27,14 +27,14 @@ export const fetchUsers = async (access) => {
     // если уровень доступа не специалист по найму, то не запрашиваем всех пользователей
     return;
   }
-  const queryUsers = query(usersCollection);
+  const queryUsers = query(usersCollection); // запрашиваем все пользователей
 
-  onSnapshot(queryUsers, async (querySnapshot) => {
+  onSnapshot(queryUsers, async (querySnapshot) => { // подписываемся на изменение всех юзеров
     const users = querySnapshot.docs.map((user) => {
       // нормализируем объект пользователей для дальнейшей работы
       return {
-        ...user.data(),
-        id: user.id,
+        ...user.data(), // раскрываем данные пользователя
+        id: user.id, // id юзера
       };
     });
     store.dispatch(actions.setUsers(users)); // сохраняем пришедших пользователей в redux хранилище
@@ -42,19 +42,19 @@ export const fetchUsers = async (access) => {
 };
 
 export const updateUser = async (data, id, chats) => {
-  delete data.isAuthorized;
+  delete data.isAuthorized; // удаление свойства авторизирован ли пользователь
   // обновить пользователя
   try {
     const userRef = doc(db, "users", id); // получаем ссылку на объект необходимого нам пользователя
-    const { department } = (await getDoc(userRef)).data();
+    const { department } = (await getDoc(userRef)).data(); // получаем отделы у пользователя
     let newData = {
-      ...data,
+      ...data, // раскрываем данные
       chats
     };
-    if (department !== data.department) {
+    if (department !== data.department) { // если отдел изменился
       const chatsObj = await setChats(data, chats);
 
-      newData = {
+      newData = { // генерируем новые данные юзера
         ...data,
         chats: chatsObj,
       };
@@ -66,15 +66,13 @@ export const updateUser = async (data, id, chats) => {
   }
 };
 
-export const removeUser = async (id) => {
-  // удаление пользователя
+export const removeUser = async (id) => { // удаление пользователя
   try {
     const userRef = doc(db, "users", id);
     const chatsCollection = collection(db, "chat");
     const chats = await getDocs(chatsCollection); // запрашиваем все чаты
-    chats.forEach((chat) => {
-      // проходимся по чатам
-      const { messages } = chat.data();
+    chats.forEach((chat) => { // проходимся по чатам
+      const { messages } = chat.data(); // получаем сообщения чата
       const newMessages = messages.filter((msg) => msg.author.id !== id); // оставляем сообщения только те, в которых автор не тот, кого мы пытаемся удаилть
 
       if (newMessages.length < messages.length) {
@@ -91,30 +89,30 @@ export const removeUser = async (id) => {
   }
 };
 
-export const getUsersFromDepts = async (departments) => {
+export const getUsersFromDepts = async (departments) => { // получаем всех пользователей в отделе
   try {
-    const usersPromise = departments.map(async (dept) => {
-      const usersQuery = query(
+    const usersPromise = departments.map(async (dept) => { // проходимся по всем отделам
+      const usersQuery = query( // проходимся по всем пользователям и находим тех, у кого текущий отдел
         usersCollection,
         where("department", "==", dept)
       );
 
-      const usersRef = await getDocs(usersQuery);
-      return usersRef.docs.map((userSnapshot) => userSnapshot.data());
+      const usersRef = await getDocs(usersQuery); // получаем пользователей
+      return usersRef.docs.map((userSnapshot) => userSnapshot.data()); // возвращаем их данные
     });
-    const users = await Promise.all(usersPromise);
-    return users.flat();
+    const users = await Promise.all(usersPromise); // параллельно выполняем асинхронные функции
+    return users.flat(); // возвращаем массив с уменьшенным уровнем вложенности
   } catch(_e) {
     toast.error(i18next.t('Загрузить пользователей не удалось'))
   }
 };
 
-export const register = async (data) => {
-  delete data.isAuthorized;
+export const register = async (data) => { // добавление пользователя
+  delete data.isAuthorized; // удаление инфы авторизирован ли юзер
   const isUserUniqueQuery = query(
     usersCollection,
     where("username", "==", data.username)
-  ); // проверяем ник на уникальность
+  ); // создаем запрос на проверку ника на уникальность
   const isUserUnique = await getDocs(isUserUniqueQuery); // проверяем ник на уникальность
 
   if (isUserUnique.size > 0) {
@@ -122,16 +120,15 @@ export const register = async (data) => {
     toast.error(i18next.t("errors.exist"));
     return;
   }
-  const token = uuidv4();
+  const token = uuidv4(); // генерация токена
 
-  const chats = await setChats(data);
+  const chats = await setChats(data); // создаем объект чатом с количеством прочитанных сообщений
   const dataWithChats = {
-    ...data,
-    chats,
-    token
+    ...data, // раскрываем данные юзера
+    chats, // чаты
+    token // токен
   };
 
   await setDoc(doc(db, 'users', token), dataWithChats); // добавляем документ с инфой о нашем пользователе
-  // const userSnapshot = await getDoc(userRef); // получаем этот документ для уведолмения юзера и сохранения инфы в хранилище
   toast.success(i18next.t("success.register"));
 };

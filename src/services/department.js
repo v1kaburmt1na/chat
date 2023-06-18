@@ -44,8 +44,8 @@ export const removeDepartment = async (data) => { // удаление отдел
     where("department", "==", dept),
     limit(1)
   );
-  const userInDept = (await getDocs(usersInDeptRef)).docs[0];
-  if (userInDept) { // если есть - дропаем ошибку
+  const userInDept = (await getDocs(usersInDeptRef)).docs[0]; // получаем первого юзера
+  if (userInDept) { // если он есть - дропаем ошибку
     toast.error(i18next.t("errors.userInDept"));
     return;
   }

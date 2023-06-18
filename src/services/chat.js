@@ -25,22 +25,20 @@ export const chatCollection = collection(db, "chat");
 
 export const fetchChats = async (ctx) => {
   // запрос всех чатов для юзера
-  const { access, department } = ctx;
-  let queryChats;
-  if (access === "chat-operator" || access === "ceo") {
-    // если уровень доступа не ген. директор и не оператор чата
-    queryChats = query(chatCollection, orderBy("updatedAt", "desc"));
+  const { access, department } = ctx; // достаем уровень доступа и отдел
+  let queryChats; // запрос чатов
+  if (access === "chat-operator" || access === "ceo") { // если уровень доступа равен оператор чата или исп дир
+    queryChats = query(chatCollection, orderBy("updatedAt", "desc")); // запрашиваем чаты отсортированные по последним изменениям по убыванию
   } else {
     // иначе запрашиваются только те чаты, к которым имеет доступ юзер исходя из его отдела
     queryChats = query(
       chatCollection,
       where("haveAccess", "array-contains", department),
-      orderBy("updatedAt", "desc")
+      orderBy("updatedAt", "desc") // по убыванию по последним изменениям
     );
   }
 
   onSnapshot(queryChats, async (data) => {
-    // обновляем наше redux хранилище с чатами
     const chatsArr = data.docs.map(async (docItem) => {
       const { name: chatName, messages, haveAccess } = docItem.data(); // берем название чата, сообщения и массив отделов
       const newMessages = messages.map(async (msg) => {
@@ -49,11 +47,11 @@ export const fetchChats = async (ctx) => {
         const authorRef = await getDoc(authorDoc); // получаем автора конкретного сообщения
         const { name, secondName, thirdName, post } = authorRef.data(); // получаем данные из автора
 
-        let newReply = null;
+        let newReply = null; // создаем переменную ответа на сообщение
 
-        if (msg.reply) {
-          const { author, content, id } = msg.reply;
-          if (author === msg.author.id) {
+        if (msg.reply) { // если у сообщения есть ответ
+          const { author, content, id } = msg.reply; // достаем автора, контент, id сообщения-ответа
+          if (author === msg.author.id) { // если автор сообщения-ответа тот же самый, что и у самого сообщения - НЕ запрашиваем автора заново
             newReply = {
               content,
               author: {
@@ -65,9 +63,9 @@ export const fetchChats = async (ctx) => {
             };
           } else {
             try {
-              const authorReplyDoc = doc(db, "users", author);
-              const authorReplyRef = await getDoc(authorReplyDoc);
-              const { name, secondName, thirdName } = authorReplyRef.data();
+              const authorReplyDoc = doc(db, "users", author); // получаем автора сообщения-ответа
+              const authorReplyRef = await getDoc(authorReplyDoc); // получаем автора сообщения-ответа
+              const { name, secondName, thirdName } = authorReplyRef.data(); // получаем данные из автора
 
               newReply = {
                 content,
@@ -83,13 +81,13 @@ export const fetchChats = async (ctx) => {
         }
 
         return {
-          ...msg,
+          ...msg, // раскрываем сообщение
           author: {
-            id: authorRef.id,
-            name,
-            secondName,
-            thirdName,
-            post,
+            id: authorRef.id, // id автора
+            name, // имя автора
+            secondName,// фамилия автора
+            thirdName,// отчество автора
+            post,// должность автора
           },
           reply: newReply,
         };
@@ -110,109 +108,106 @@ export const fetchChats = async (ctx) => {
 export const createChat = async (data) => {
   const { name } = data; // берем будущее название чата
   const newChat = {
-    name,
-    messages: [],
-    haveAccess: store.getState().department.depts,
-    updatedAt: Date.now(),
+    name, // название чата
+    messages: [], // массив сообщений
+    haveAccess: store.getState().department.depts, // массив всех отделов
+    updatedAt: Date.now(), // задаем дату последнего обновления - текущую
   }; // генерируем объект чата
   try {
-    const chatsRef = await getDocs(chatCollection);
-    const findedChat = chatsRef.docs.find((chat) => {
+    const chatsRef = await getDocs(chatCollection); // ссылка на документ чатов
+    const findedChat = chatsRef.docs.find((chat) => { // ищем канал, у которого название такое же как у того, который мы создаем
       return chat.data().name.toLowerCase() === data.name.toLowerCase();
     });
 
-    if (findedChat) {
+    if (findedChat) { // если этот канал найден, то бросаем ошибку о том, что имя канала должно быть уникальным
       toast.error(i18next.t("errors.uniqueChat"));
       return;
     }
 
     const ref = await addDoc(chatCollection, newChat); // добавляем чат
-    addChatToUser(ref.id);
+    addChatToUser(ref.id); // добавляем созданный чат всем юзерам
     toast.success(i18next.t("success.create")); // уведомляем об успешном добавлении чата
   } catch (e) {
     toast.error(i18next.t("errors.createChat")); // уведомляем о неудачном добавлении чата
   }
 };
 
-export const updateChat = async (data, id) => {
+export const updateChat = async (data, id) => { // обновление чата
   try {
-    const chatsRef = await getDocs(chatCollection);
-    const findedChat = chatsRef.docs.find((chat) => {
-      const currentChat = chat.data();
+    const chatsRef = await getDocs(chatCollection); // получаем все чаты
+    const findedChat = chatsRef.docs.find((chat) => { // ищем чат, у которого название такое же как у нашего обновленного
+      const currentChat = chat.data(); // получаем данные чата
       return (
         currentChat.name.toLowerCase() === data.name.toLowerCase() &&
         chat.id !== id
       );
     });
 
-    if (findedChat) {
+    if (findedChat) { // если нашли канал с таким же названием как у нас - выдаем ошибку о том, что канал должен быть уникальным
       toast.error(i18next.t("errors.uniqueChat"));
       return;
     }
 
     const newData = {
-      ...data,
-      updatedAt: Date.now(),
+      ...data, // раскрываем данные чата
+      updatedAt: Date.now(), // обновляем последнее изменение чата
     };
 
     const chatRef = doc(db, "chat", id); // получаем ссылку на нужный нам чат
     await setDoc(chatRef, newData); // обновляем его
-    toast.success(i18next.t("success.rename"));
+    toast.success(i18next.t("success.rename")); // уведомляем пользователя о том, что чат изменился
   } catch (e) {
-    toast.error(i18next.t("errors.renameChat"));
+    toast.error(i18next.t("errors.renameChat")); // уведомляем пользователя о том, что изменить чат не удалось
   }
 };
 
-export const removeChat = async (id) => {
-  // удаление чата по id
+export const removeChat = async (id) => { // удаление канала
   try {
     const chatRef = doc(db, "chat", id); // получение ссылки на документ (чат)
     await deleteDoc(chatRef); // удаление документа по ссылке
-    store.dispatch(actions.setDefaultChat());
+    store.dispatch(actions.setDefaultChat()); // после удаления чата ставим текущий чат - null
     toast.success(i18next.t("success.remove"));
   } catch (e) {
     toast.error(i18next.t("errors.removeChat"));
   }
 };
 
-export const addMessage = async (data, id, reply) => {
-  let newReply = null;
+export const addMessage = async (data, id, reply) => { // добавляем новое сообщение
+  let newReply = null; // создаем переменную ответа на сообщение
 
-  if (reply) {
-    const { content, author, id } = reply.item;
+  if (reply) { // если сообщение является ответом на другое
+    const { content, author, id } = reply.item; // берем контент, автора и id сообщ
     newReply = {
-      author: author.id,
-      content,
-      id,
+      author: author.id, // id автора
+      content, // контент
+      id, // id сообщения
     };
   }
 
   const chatRef = doc(db, "chat", id); // получение ссылки на документ (чат)
-  const currentDate = Date.now();
+  const currentDate = Date.now(); // текущая дата в timestamp (численное представление даты с миллисекундах с 1 января 1970 года)
   const newMessage = {
-    ...data,
+    ...data, // раскрываем объект сообщения
     date: currentDate, // числовое представление даты (timestamp)
     id: v4(), // задаем id для сообщения,
-    reply: newReply,
+    reply: newReply, // ставим значение переменной ответа на сообщение
   };
   await updateDoc(chatRef, {
-    // обновляем документ добавляя в массив сообщений новое с помощью arrayUnion
-    messages: arrayUnion(newMessage),
-    updatedAt: currentDate,
+    messages: arrayUnion(newMessage), // обновляем документ добавляя в массив сообщений новое с помощью arrayUnion
+    updatedAt: currentDate, // ставим текущую дату (timestamp) в свойстве последнего обновления чата
   });
 };
 
-export const addChatToUser = async (id) => {
-  const users = await getDocs(usersCollection);
-  users.forEach(async (snap) => {
-    const userData = snap.data();
-    const { chats } = userData;
-    const userRef = snap.ref;
-    const newChats = {
-      ...chats,
-      [id]: 0,
+export const addChatToUser = async (id) => { // добавление чата всем юзерам
+  const users = await getDocs(usersCollection); // получаем всех пользователей
+  users.forEach(async (snap) => { // проходимся по каждому
+    const { chats } = snap.data(); // берем чаты у пользователя
+    const userRef = snap.ref; // берем ссылку на пользователя
+    const newChats = { // генерируем новый объект чатов
+      ...chats, // раскрываем все чаты, которые есть
+      [id]: 0, // проставляем 0 прочитанных
     };
-    await updateDoc(userRef, {
+    await updateDoc(userRef, { // обновляем документ новыми данными
       chats: newChats,
     });
   });
