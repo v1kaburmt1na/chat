@@ -51,28 +51,28 @@ function ChatPage() {
             <div className="row h-100 flex-md-row flex-nowrap">
               {!currentChat ? (
                 <div className={innerClassnames}>
-                  <UserData user={user} position="start" />
+                  <UserData user={user} position="start" /> { /* информация о юзере */ }
                   <div className="d-flex justify-content-between channels">
                     <span>Каналы</span>
-                    <ButtonAddChat />
+                    <ButtonAddChat /> { /* кнопка добавить чат */ }
                   </div>
-                  <ChatList />
+                  <ChatList /> { /* список каналов */ }
                 </div>
               ) : (
-                <Chat />
+                <Chat /> // сам канал
               )}
             </div>
           ) : (
             <div className="row h-100 flex-md-row flex-nowrap">
               <div className={innerClassnames}>
-                <UserData user={user} position="start" />
+                <UserData user={user} position="start" /> { /* информация о юзере */ }
                 <div className="d-flex justify-content-between channels">
                   <span>Каналы</span>
-                  <ButtonAddChat />
+                  <ButtonAddChat /> { /* кнопка добавить чат */ }
                 </div>
-                <ChatList />
+                <ChatList /> { /* список каналов */ }
               </div>
-              <Chat />
+              <Chat /> { /* сам канал */ }
             </div>
           )}
         </div>

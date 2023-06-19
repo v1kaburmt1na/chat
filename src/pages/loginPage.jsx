@@ -17,10 +17,10 @@ function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (user.isAuthorized) {
-      navigate("/");
+    if (user.isAuthorized) { // если юзер авторизован - направляем его на страницу каналов
+      navigate("/"); // вызываем функцию, которая направляет юзера на страницу каналов
     }
-  }, [user]);
+  }, [user]); // при изменении юзера вызываем этот хук
 
   return (
     <div className="login-page container-fluid">
@@ -37,13 +37,13 @@ function LoginPage() {
                 />
               </div>
               <Formik
-                onSubmit={({ username, password }) => {
+              onSubmit={({ username, password }) => {
                   const user = {
                     username,
                     password,
                   };
 
-                  login(user, 'login');
+                  login(user, 'login'); // авторизируем юзера переданными данными
                 }}
                 initialValues={{
                   // стартовые значения

@@ -16,12 +16,12 @@ import cn from "classnames";
 import { nullUser, setValues } from "../utils/nullUser";
 
 export const UserInfo = (props) => {
-  const { t } = useTranslation();
-  const { user, setUser } = props;
-  const users = useSelector((state) => state.users.users);
-  let currentUser = users.find((u) => u.id === user);
+  const { t } = useTranslation(); // функция локализации
+  const { user, setUser } = props; // берем id юзера, которого сейчас будем редактировать/удалять и функцию для изменения текущего юзера
+  const users = useSelector((state) => state.users.users); // берем ВСЕХ юзеров из хранилища юзеров
+  let currentUser = users.find((u) => u.id === user); // находим нужного нам сравнивая id
 
-  if (user === null) {
+  if (user === null) { // если id равен null - показываем пустые значения
     currentUser = nullUser;
   }
 
@@ -63,48 +63,48 @@ export const UserInfo = (props) => {
       .required(t("errors.required"))
       .min(3, t("errors.username")),
   });
-  const departments = useSelector((state) => state.department.depts);
+  const departments = useSelector((state) => state.department.depts); // достаем отделы из хранилища отделов
   const formik = useFormik({
     validationSchema: schema,
     initialValues: setValues(currentUser),
-  });
-  const { values, errors, handleChange, setFieldValue, setFieldError } = formik;
+  }); // задаем начальные значения и схему валидации для библиотеки валидации форм
+  const { values, errors, handleChange, setFieldValue, setFieldError } = formik; // берем нужные нам переменные из объекта формик
   useEffect(() => {
-    formik.setValues(setValues(currentUser));
-  }, [currentUser]);
+    formik.setValues(setValues(currentUser)); // изменяем поля юзера
+  }, [currentUser]); // этот хук сработает если мы изменим пользователя
 
-  const removeCurrentUser = () => {
-    removeUser(currentUser?.id);
-    setUser(undefined);
+  const removeCurrentUser = () => { // функция, которая удалит юзера
+    removeUser(currentUser?.id); // удаление юзера
+    setUser(undefined); // меняем значение текущего ющера на пусто
   };
 
-  const updateCurrentUser = () => {
+  const updateCurrentUser = () => { // обновить текущего юзера
     updateUser(values, currentUser?.id, currentUser.chats);
   };
 
-  const registerUser = () => {
+  const registerUser = () => { // регистрация юзера
     register(values);
-    setUser(undefined);
+    setUser(undefined); // меняем значение текущего ющера на пусто
   };
 
-  const errorsCount = Object.keys(errors).length;
-  const canEditOrAdd = errorsCount === 0;
+  const errorsCount = Object.keys(errors).length; // получаем ошибки в введенных данных
+  const canEditOrAdd = errorsCount === 0; // если ошибок в данных нет, то можно отправлять запрос на изменение/добавление юзера
 
   const className = cn("user", {
     "users-blank": user === undefined,
   });
 
-  const isCeoPost = values.post === "Исполнительный директор";
+  const isCeoPost = values.post === "Исполнительный директор"; // сверяем введенную должность с испол директором и возвращаем является ли юзер испол диром
 
   useEffect(() => {
-    if (isCeoPost && values.access !== "ceo") {
-      formik.setFieldValue("access", "ceo");
+    if (isCeoPost && values.access !== "ceo") { // если должность исп дир И текущий уровень доступа НЕ исп дир
+      formik.setFieldValue("access", "ceo"); // изменяем уровень доступа на исп дир
     }
-  }, [isCeoPost]);
+  }, [isCeoPost]); // хук вызывается если должность поменялась
 
   return (
     <div className={className}>
-      {user !== undefined ? (
+      {user !== undefined ? ( // если юзера равен null или id - показывем форму для добавления/изменения/удаления
         <form>
           <div className="user-section">
             <FormGroup>
@@ -116,10 +116,10 @@ export const UserInfo = (props) => {
                 name="username"
                 id="username"
                 className="mb-2"
-                isInvalid={!!errors.username}
+                isInvalid={!!errors.username} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.username}
+                {errors.username} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
             <FormGroup>
@@ -131,10 +131,10 @@ export const UserInfo = (props) => {
                 name="password"
                 id="password"
                 className="mb-2"
-                isInvalid={!!errors.password}
+                isInvalid={!!errors.password} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.password}
+                {errors.password} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
           </div>
@@ -147,10 +147,10 @@ export const UserInfo = (props) => {
                 data-testid="input-body"
                 name="secondName"
                 id="secondName"
-                isInvalid={!!errors.secondName}
+                isInvalid={!!errors.secondName} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.secondName}
+                {errors.secondName} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
             <FormGroup>
@@ -161,10 +161,10 @@ export const UserInfo = (props) => {
                 data-testid="input-body"
                 name="name"
                 id="name"
-                isInvalid={!!errors.name}
+                isInvalid={!!errors.name} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.name}
+                {errors.name} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
             <FormGroup>
@@ -175,10 +175,10 @@ export const UserInfo = (props) => {
                 data-testid="input-body"
                 name="thirdName"
                 id="thirdName"
-                isInvalid={!!errors.thirdName}
+                isInvalid={!!errors.thirdName} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.thirdName}
+                {errors.thirdName} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
           </div>
@@ -191,10 +191,10 @@ export const UserInfo = (props) => {
                 data-testid="input-body"
                 name="post"
                 id="post"
-                isInvalid={!!errors.post}
+                isInvalid={!!errors.post} // если есть ошибки - подсвечиваем красным
               />
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.post}
+                {errors.post} { /* ошибка связанная с неправильно введенными данными */ }
               </div>
             </FormGroup>
             <FormGroup>
@@ -208,7 +208,7 @@ export const UserInfo = (props) => {
                   {departments.map((dept) => (
                     <Dropdown.Item
                       onClick={() => {
-                        setFieldValue("department", dept);
+                        setFieldValue("department", dept); // 
                       }}
                       key={dept}
                     >
@@ -218,7 +218,7 @@ export const UserInfo = (props) => {
                 </Dropdown.Menu>
               </Dropdown>
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.department}
+                {errors.department} { /* ошибка связанная с невыбранным отделом */ }
               </div>
             </FormGroup>
             {!isCeoPost && (
@@ -261,7 +261,7 @@ export const UserInfo = (props) => {
                   </Dropdown.Menu>
                 </Dropdown>
                 <div className="invalid-feedback" style={{ display: "block" }}>
-                  {errors.access}
+                  {errors.access} { /* ошибка связанная с невыбранным уровнем доступа */ }
                 </div>
               </FormGroup>
             )}
@@ -294,19 +294,19 @@ export const UserInfo = (props) => {
                 </Dropdown.Menu>
               </Dropdown>
               <div className="invalid-feedback" style={{ display: "block" }}>
-                {errors.isActive}
+                {errors.isActive} { /* ошибка связанная с активацией */ }
               </div>
             </FormGroup>
           </div>
           <div className="d-flex justify-content-end user-footer">
             {user ? (
               <>
-                <Button onClick={removeCurrentUser} variant="secondary">
+                <Button onClick={removeCurrentUser} variant="secondary"> { /* на клик вешаем удаление юзера */ }
                   Удалить
                 </Button>
                 <Button
-                  disabled={!canEditOrAdd}
-                  onClick={updateCurrentUser}
+                  disabled={!canEditOrAdd} // запрещаем нажатие если есть ошибки
+                  onClick={updateCurrentUser} // на клик вешаем обновление юзера
                   variant="primary"
                 >
                   Изменить
@@ -315,15 +315,15 @@ export const UserInfo = (props) => {
             ) : (
               <Button
                 variant="primary"
-                disabled={!canEditOrAdd}
-                onClick={registerUser}
+                disabled={!canEditOrAdd} // запрещаем нажатие если есть ошибки
+                onClick={registerUser} // на клик вешаем регистрацию юзера
               >
                 Добавить
               </Button>
             )}
           </div>
         </form>
-      ) : (
+      ) : ( // если user равен undefined - показывем выбор сотрудника
         <div className="choose-user rounded">
           Добавьте сотрудника или выберите из списка
         </div>

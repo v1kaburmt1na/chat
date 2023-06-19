@@ -2,8 +2,8 @@ import { useSelector } from "react-redux";
 import { Button, Table } from "react-bootstrap";
 
 export const UserList = (props) => {
-  const { setUser } = props;
-  const users = useSelector((state) => state.users.users);
+  const { setUser } = props; // берем функцию для выбора юзера
+  const users = useSelector((state) => state.users.users); // берем всех юзеров из хранилища
   return (
     <div className="users-list">
       <Table striped bordered hover className="users-table">
@@ -29,22 +29,22 @@ export const UserList = (props) => {
               post,
               department,
               isActive,
-            } = user;
+            } = user; // достаем данные из юзера, которые в дальнейшем будем отображать
             return (
               <tr onClick={() => setUser(user.id)} key={id}>
-                <th>{username}</th>
-                <th>{secondName}</th>
-                <th>{name}</th>
-                <th>{thirdName}</th>
-                <th>{post}</th>
-                <th>{department}</th>
-                <th>{isActive ? "Да" : "Нет"}</th>
+                <th>{username}</th> { /* юзернейм */ }
+                <th>{secondName}</th> { /* фамилия */ }
+                <th>{name}</th> { /* имя */ } 
+                <th>{thirdName}</th> { /* отчество */ }
+                <th>{post}</th> { /* должность */ }
+                <th>{department}</th> { /* отдел */ }
+                <th>{isActive ? "Да" : "Нет"}</th> { /* активен ли аккаунт */ }
               </tr>
             );
           })}
         </tbody>
       </Table>
-      <Button onClick={() => setUser(null)}>Добавить сотрудника</Button>
+      <Button onClick={() => setUser(null)}>Добавить сотрудника</Button> { /* при нажатии меняем текущего юзера на null и регистрируем */ }
     </div>
   );
 };
