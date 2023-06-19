@@ -1,18 +1,18 @@
 import { useReply } from "../hooks";
 
 export const Reply = () => {
-  const { reply, setReply } = useReply();
-  const { content, author } = reply.item;
-  const handleCancelReply = (e) => {
+  const { reply, setReply } = useReply(); // достаем из хука информацию о том на какое сообщение идет ответ и функцию для изменение этого сообщения
+  const { content, author } = reply.item; // достаем контент и автора из сообщения 
+  const handleCancelReply = (e) => { // функция вызовется при нажатии на крестик и она отменит ответ на сообщение
     e.stopPropagation();
-    setReply(null);
+    setReply(null); // отмена ответа на сообщение
   };
-  const initials = `${author.secondName} ${author.name[0]} ${author.thirdName[0]}`;
+  const initials = `${author.secondName} ${author.name[0]} ${author.thirdName[0]}`; // ФИО автора сообщения
   return (
     <div className="reply">
       <div className="reply-main">
         <p className="reply-author text-muted">{initials}</p>
-        <p className="reply-content" title={JSON.parse(content)}>{JSON.parse(content)}</p>
+        <p className="reply-content" title={JSON.parse(content)}>{JSON.parse(content)}</p> { /* отрисовываем сам контент И атрибут title покажет нам текст сообщения при наведении на текст */}
       </div>
       <div className="reply-close" onClick={handleCancelReply}>
         <svg

@@ -66,7 +66,7 @@ export const Departments = (props) => {
             onChange={(e) => setNewDept(e.target.value)} // при изменении input менять состояние
           />
           <Button
-            disabled={newDept.length === 0}
+            disabled={newDept.length === 0} // отключаем возможность нажать на кнопку если название отдела не было введено
             type="submit"
             className="dept-add-btn"
           >

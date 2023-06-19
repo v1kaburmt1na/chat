@@ -9,21 +9,21 @@ import { useSelector } from "react-redux";
 import { ReplyContext } from "../contexts/index.js";
 
 function ChatPage() {
-  const { currentChat } = useSelector((state) => state.chat);
-  const [reply, setReply] = useState(null);
-  const [isMobile, setIsMobile] = useState(document.documentElement.scrollWidth <= 768);
+  const { currentChat } = useSelector((state) => state.chat); // достаем из хранилища текущий чат
+  const [reply, setReply] = useState(null); // создаем состояние ответа на сообщение
+  const [isMobile, setIsMobile] = useState(document.documentElement.scrollWidth <= 768); // создаем состояние ширины экрана юзера - если менее 768, то с телефона
 
   useEffect(() => {
-    window.onresize = () => {
-      setIsMobile(document.documentElement.scrollWidth <= 768);
+    window.onresize = () => { // на изменение ширины окна
+      setIsMobile(document.documentElement.scrollWidth <= 768); // изменяем состояние ширины экрана
     };
     
     return () => {
-      window.onresize = null
+      window.onresize = null; // при удалении компонента - удаляем обработчик с окна браузера
     };
-}, []);
+}, []); // хук вызовется при первом рендеринге компонента
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user); // достаем юзера из хранилища
   const outterClassnames = cn(
     "container chat-page__inner my-4 overflow-hidden",
     {
@@ -41,13 +41,13 @@ function ChatPage() {
   const replyCtxValue = {
     reply,
     setReply,
-  };
+  }; // контекст ответа на сообщение
 
   return (
-    <ReplyContext.Provider value={replyCtxValue}>
+    <ReplyContext.Provider value={replyCtxValue}> { /* передаем значения ответа на сообщение в проп value */ }
       <div className="chat-page">
         <div className={outterClassnames}>
-          {isMobile ? (
+          {isMobile ? ( // если зашли с мобильного устройства - показываем ЛИБО список каналов, ЛИБО чат
             <div className="row h-100 flex-md-row flex-nowrap">
               {!currentChat ? (
                 <div className={innerClassnames}>
@@ -76,7 +76,7 @@ function ChatPage() {
             </div>
           )}
         </div>
-        <Modal />
+        <Modal /> { /* рендерим модалку */ }
       </div>
     </ReplyContext.Provider>
   );

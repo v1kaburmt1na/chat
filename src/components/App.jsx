@@ -28,16 +28,15 @@ const ModalProvider = ({ children }) => {
 };
 
 function PrivateRoute({ children }) {
-  const { isAuthorized } = useSelector((state) => state.user);
+  const { isAuthorized } = useSelector((state) => state.user); // берет поле авторизирован ли юзер
 
-  return isAuthorized ? children : <Navigate to="/login" />;
-  // если авторизован - выводим страницу, иначе навигируем на страницу логина
+  return isAuthorized ? children : <Navigate to="/login" />; // если авторизован - выводим страницу, иначе навигируем на страницу логина
 }
 
 const PrivateRouteEmployers = ({ children }) => {
-  const { access, isAuthorized } = useSelector((state) => state.user);
+  const { access, isAuthorized } = useSelector((state) => state.user); // берем уровень доступа и авторизирован ли юзер
 
-  return access === "hr-manager" && isAuthorized ? (
+  return access === "hr-manager" && isAuthorized ? (  // если уровень доступа равен менеджеру по персоналу И пользователь авторизирован - выводим страницу, иначе навигируем на страницу каналов
     children
   ) : (
     <Navigate to="/" />
@@ -46,7 +45,7 @@ const PrivateRouteEmployers = ({ children }) => {
 
 function App() {
   const { access, department } = useSelector((state) => state.user); // Получаем информацию о юзере из хранилища
-  const { isLoading } = useSelector((state) => state.main);
+  const { isLoading } = useSelector((state) => state.main); // смотрим происходит ли сейчас загрузка пользователя
 
   useEffect(() => {
     if (department) {
@@ -66,17 +65,15 @@ function App() {
       token: localStorage.getItem('token')
     };
 
-    login(data, 'auth');
+    login(data, 'auth'); // берем токен 
   }, []);
 
-  return isLoading ? (
+  return isLoading ? ( // если сейчас идет загрузка - показываем индикатор загрузки иначе рендерим приложение
     <div className="full">
       <Ring size={40} />
     </div>
   ) : (
     <ModalProvider>
-      {/* Компонент, внутри которого будет доступ к контексту сессии (авторизации)*/}
-      {/* Проводим контекст сокета для создания/изменения/удаления канала и отправки сообщений */}
       <Routes>
         {/* Компонент путей */}
         <Route path="/" element={<Layout />}>
@@ -98,9 +95,6 @@ function App() {
               </PrivateRouteEmployers>
             }
           />
-          {/* Кладем внутрь компонент PrivateRoute и он следит за авторизацией */}
-          {/* Страница регистрации */}
-          {/* Все остальные страницы */}
         </Route>
         <Route path="login" element={<LoginPage />} />
         <Route path="*" element={<NotFoundPage />} />

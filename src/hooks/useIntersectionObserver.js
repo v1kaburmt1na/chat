@@ -4,10 +4,10 @@ export const useIntersectionObserver = (
   elementRef,
   { threshold = 0, root = null, rootMargin = "0%", freezeOnceVisible = false }
 ) => {
-  const [entry, setEntry] = useState();
-  const frozen = entry?.isIntersecting && freezeOnceVisible;
-  const updateEntry = ([entry]) => {
-    setEntry(entry);
+  const [entry, setEntry] = useState(); // сам элемент, за которым следим
+  const frozen = entry?.isIntersecting && freezeOnceVisible; // переменная, которая говорит о том следить ли за элементом после 1 вхождения в область видимости
+  const updateEntry = ([entry]) => { // функция, которая выполнится когда элемент попадет в область видимости
+    setEntry(entry); // изменяем элемент, за которым следим
   };
 
   useEffect(() => {

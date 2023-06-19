@@ -10,30 +10,28 @@ import { useReply } from "../hooks";
 filter.add(filter.getDictionary("ru")); // Добавляем русский в библиотеку-цензор матов
 
 export const MessageField = (props) => {
-  const { currentChat, handleClickScroll } = props;
-  const { reply, setReply } = useReply();
-  const user = useSelector((state) => state.user);
-  const { t } = useTranslation();
-  const formRef = useRef(null);
-  const handleSubmit = ({ body }) => {
+  const { currentChat, handleClickScroll } = props; // достаем из пропсов текущий чат и функцию для скролла до последнего сообщения
+  const { reply, setReply } = useReply(); // достаем из хука информацию о том на какое сообщение идет ответ и функцию для изменение этого сообщения
+  const user = useSelector((state) => state.user); // достаем юзера
+  const { t } = useTranslation(); // достаем функцию для локализации
+  const formRef = useRef(null); // ссылка на элемент формы
+  const handleSubmit = ({ body }) => { // функция, которая вызовится при отправки сообщения
     formik.values.body = ""; // очистим поле ввода сообщения после отправки
     if (body.trim().length < 1) {
       return;
     }
 
-    const filteredMessage = filter.clean(body.trim());
-    const saveFormattingMsg = JSON.stringify(filteredMessage);
-    const newMessage = {
+    const filteredMessage = filter.clean(body.trim()); // убираем матерные слова из сообщения и удаляем пробелы
+    const saveFormattingMsg = JSON.stringify(filteredMessage); // превращаем сообщение в JSON строку
+    const newMessage = { // создаем новый объект сообщения с автором и контентом
       content: saveFormattingMsg,
       author: {
         id: user.id,
       },
     };
-    setReply(null);
-    addMessage(newMessage, currentChat, reply);
-    setTimeout(() => {
-      handleClickScroll();
-    }, 500);
+    setReply(null); // после отправки сообщения указываем, что сообщение-ответа теперь нет
+    addMessage(newMessage, currentChat, reply); // отправляем сообщение
+    setTimeout(handleClickScroll, 500); // через 500 миллисекунд скроллим до последнего сообщения
   };
 
   const formik = useFormik({
@@ -42,12 +40,12 @@ export const MessageField = (props) => {
       body: "",
     },
     onSubmit: handleSubmit,
-  });
+  }); // вызываем хук библиотеки работы с формами формик и ставим начальное значение сообщения - пустая строка
 
-  const handleKeyDown = (event) => {
-    if (event.keyCode === 13 && !event.shiftKey) {
-      event.preventDefault();
-      handleSubmit(formik.values);
+  const handleKeyDown = (event) => { // функция, которая отправит сообщение при нажатии на энтер И при этом не должен быть нажат шифт
+    if (event.keyCode === 13 && !event.shiftKey) { // 13 - клавиша энтер
+      event.preventDefault(); // останавливаем дефолтное поведение браузера
+      handleSubmit(formik.values); // вызываем функцию отправки сообщения
     }
   };
 
@@ -58,26 +56,24 @@ export const MessageField = (props) => {
   return (
     <form
       className={fieldClassname}
-      noValidate=""
-      onSubmit={formik.handleSubmit}
-      ref={formRef}
+      noValidate="" // ссылка на элемент формы
+      onSubmit={formik.handleSubmit} // на отправку формы вешаем функцию отправки сообщения
+      ref={formRef} // ссылка на элемент формы
     >
-      {" "}
-      {/* При отправке формы будет вызвана функция-обработчик */}
       <div className="input-group has-validation">
         <textarea
           className="border-0 p-0 ps-2 form-control chat-input"
-          onChange={formik.handleChange}
-          value={formik.values.body}
+          onChange={formik.handleChange} // при изменении выполнять функцию formik.handleChange
+          value={formik.values.body} // значение сообщения
           name="body"
           aria-label="Новое сообщение"
           placeholder="Введите сообщение..."
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleKeyDown} // при нажатии на клавишу клавитуры вызываем переданную функцию
         />
         <button
           className="btn btn-group-vertical send-btn"
           type="submit"
-          disabled={formik.values.body === ""}
+          disabled={formik.values.body === ""} // отключаем возможность нажать если никакое сообщение не написали
         >
           {" "}
           {/* Заблокировать кнопку если поле пустое */}

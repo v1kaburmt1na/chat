@@ -52,6 +52,7 @@ export const login = async (data, type) => { // авторизация
     // проверяем активирован ли пользователь
     toast.error(i18next.t("errors.needActivate")); // уведомляем о том, что учетка не активна
     store.dispatch(mainActions.setLoading(false)); // прекращаем загрузку
+    localStorage.removeItem('token'); // удаляем из localstorage токен
     throw error("403"); // дропаем ошибку со статус кодом 403 - НЕ АВТОРИЗИРОВАН
   }
 

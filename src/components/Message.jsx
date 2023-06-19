@@ -13,45 +13,45 @@ import { readMessage } from "../services/user";
 import { ContextDropdown } from "./ContextDropdown";
 import { MessageReply } from "./MessageReply";
 
-export const Message = memo(forwardRef((props, ref) => {
+export const Message = memo(forwardRef((props, ref) => { // компонент сообщения
   const { userId, message, readedCount, chatId, isLast, setShowScrollBtn, setReply, scrollReply } =
-    props;
-  const { item, number } = message;
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const msgRef = useRef(null);
-  const entry = useIntersectionObserver(msgRef, {});
-  const isVisible = !!entry?.isIntersecting;
-  const { author, date, content, reply, id } = item;
-  const dateObj = new Date(date);
-  const hour = formatDate(dateObj.getHours());
-  const minutes = formatDate(dateObj.getMinutes());
-  const formattedDate = `${hour}:${minutes}`;
-  const messageLines = JSON.parse(content).split("\n");
-  const isMyMessage = author.id === userId;
+    props; // достаем данные из пропсов
+  const { item, number } = message; // достаем само сообщение и его номер
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false); // открыто ли контекстное меню
+  const msgRef = useRef(null); // ссылка на сообщение
+  const entry = useIntersectionObserver(msgRef, {}); // вызываем хук, который следит за тем видно ли сейчас сообщение
+  const isVisible = !!entry?.isIntersecting; // флаговая переменная видно ли сейчас сообщение
+  const { author, date, content, reply, id } = item; // достаем автора, дату отправки, контент, ответ и id сообщения из сообщения
+  const dateObj = new Date(date); // получаем объект даты из timestamp
+  const hour = formatDate(dateObj.getHours()); // получаем количество часов, когда было отправлено сообщение
+  const minutes = formatDate(dateObj.getMinutes()); // получаем количество минут, когда было отправлено сообщение
+  const formattedDate = `${hour}:${minutes}`; // форматируем дату
+  const messageLines = JSON.parse(content).split("\n"); // делим сообщение по знаку \n, то есть по концу строки
+  const isMyMessage = author.id === userId; // смотрим мое ли это сообющение
   const msgClassnames = cn("message", {
     "message-my": isMyMessage,
   });
   useEffect(() => {
-    if (isVisible && number > readedCount) {
+    if (isVisible && number > readedCount) { // если сообщение сейчас видно И номер сообщения больше чем юзер прочитал в этом чате
       const data = {
         user: userId,
         chat: chatId,
         count: number,
       };
-      readMessage(data);
+      readMessage(data); // читаем сообщение
       return;
     }
 
-    if (isLast) {
-      setShowScrollBtn(!isVisible);
+    if (isLast) { // если это сообщение является последним
+      setShowScrollBtn(!isVisible); // вызываем функцию, которая изменяет состояние показа кнопки скролла вниз
     }
 
-  }, [isVisible]);
+  }, [isVisible]); // этот хук будет вызываться если элемент появился/ушел из зоны видимости
 
-  useEffect(() => {
-    if (msgRef.current && scrollReply === id) {
+  useEffect(() => { // этот хук вызывается при изменении переменной scrollReply
+    if (msgRef.current && scrollReply === id) { // id сообщения равен id сообщения, до которого нужно заскролить, то скролим
       msgRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setReply(null);
+      setReply(null); // говорим, что больше не нужно скроллить до элемента
     }
   }, [scrollReply]);
 
@@ -60,28 +60,28 @@ export const Message = memo(forwardRef((props, ref) => {
       <div
         ref={msgRef}
         className="message-outter"
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setIsContextMenuOpen(true);
+        onContextMenu={(e) => { // функция, которая изменяет состояния открытия контекстного меню
+          e.preventDefault(); // выключаем дефолтное поведение браузера
+          setIsContextMenuOpen(true); // изменяем состояние открытия контекстного меню
         }}
       >
         <div ref={ref} className={msgClassnames}>
           <div className="message-inner">
-            {!isMyMessage ? <span className="post">{author.post}</span> : null}
-            <span className="time">{formattedDate}</span>
+            {!isMyMessage ? <span className="post">{author.post}</span> : null} {/* если сообщение не мое, то показываем должность */}
+            <span className="time">{formattedDate}</span> {/* время сообщения */}
           </div>
-          {!isMyMessage ? (
+          {!isMyMessage ? ( // если сообщение не мое, то показываем ФИО
             <span className="author">
-              {author.secondName} {author.name} {author.thirdName}
+              {author.secondName} {author.name} {author.thirdName} {/* ФИО */}
             </span>
           ) : null}
-          {reply && <MessageReply setReply={setReply} reply={reply} isMyMessage={isMyMessage} />}
+          {reply && <MessageReply setReply={setReply} reply={reply} isMyMessage={isMyMessage} />} {/* если это сообщение является ответом на другое - рисуем компонент */}
           <div className="content">
-            {messageLines.map((message, i) => (
+            {messageLines.map((message, i) => ( // пройдемся по строкам сообщения
               <Fragment key={message + i}>
-                {message ? (
+                {message ? ( // если это сообщение - рисуем сообщение
                   message
-                ) : (
+                ) : ( // иначе ставим 2 тэга переноса строки
                   <>
                     <br />
                     <br />
@@ -90,12 +90,12 @@ export const Message = memo(forwardRef((props, ref) => {
               </Fragment>
             ))}
           </div>
-          {isContextMenuOpen && (
+          {isContextMenuOpen && ( // если контекстное меню открыто - показываем его
             <ContextDropdown
-              isLast={isLast}
-              message={message}
-              setIsOpen={setIsContextMenuOpen}
-              position={isMyMessage ? "right" : "left"}
+              isLast={isLast} // является ли это сообщение последним
+              message={message} // передаем сообщение
+              setIsOpen={setIsContextMenuOpen} // передаем функцию для закрытия меню (будем юзать при нажатии)
+              position={isMyMessage ? "right" : "left"} // где отобразить - справо или слева
             />
           )}
         </div>

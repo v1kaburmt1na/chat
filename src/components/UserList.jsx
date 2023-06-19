@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { Button, Table } from "react-bootstrap";
-import { nullUser } from "../utils/nullUser";
 
 export const UserList = (props) => {
   const { setUser } = props;
